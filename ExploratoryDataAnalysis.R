@@ -135,6 +135,32 @@ ggplot(restaurant_data, aes(x = Promotions)) +
   geom_bar(fill = "blue") +
   labs(title = "Bar Plot of Promotions", x = "Promotions", y = "Count")
 
+# Multivariate Plots
+
+# Scatter plot for Average Customer Spending vs Monthly Revenue
+ggplot(restaurant_data, aes(x = Average_Customer_Spending, y = Monthly_Revenue)) +
+  geom_point(color = "blue") +
+  labs(title = "Scatter Plot of Average Customer Spending vs Monthly Revenue",
+       x = "Average Customer Spending", y = "Monthly Revenue")
+
+# Scatter plot for Marketing Spend vs Monthly Revenue, colored by Cuisine Type
+ggplot(restaurant_data, aes(x = Marketing_Spend, y = Monthly_Revenue, color = Cuisine_Type)) +
+  geom_point() +
+  labs(title = "Scatter Plot of Marketing Spend vs Monthly Revenue by Cuisine Type",
+       x = "Marketing Spend", y = "Monthly Revenue")
+
+# Boxplot of Monthly Revenue by Cuisine Type
+ggplot(restaurant_data, aes(x = Cuisine_Type, y = Monthly_Revenue)) +
+  geom_boxplot(fill = "blue") +
+  labs(title = "Boxplot of Monthly Revenue by Cuisine Type", x = "Cuisine Type", y = "Monthly Revenue")
+
+# Boxplot of Monthly Revenue by Promotions
+ggplot(restaurant_data, aes(x = Promotions, y = Monthly_Revenue)) +
+  geom_boxplot(fill = "blue") +
+  labs(title = "Boxplot of Monthly Revenue by Promotions", x = "Promotions", y = "Monthly Revenue")
+
+# Pair plot for numeric variables
+ggpairs(restaurant_data %>% select_if(is.numeric), title = "Pair Plot of Numeric Variables")
 
 
 
