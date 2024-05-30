@@ -64,3 +64,12 @@ rf_model <- train(Monthly_Revenue ~ ., data = train_data, method = "rf", trContr
 print(lm_model)
 print(dt_model)
 print(rf_model)
+
+# Compare model performance using resamples
+models <- list("Linear Regression" = lm_model,
+               "Decision Tree" = dt_model,
+               "Random Forest" = rf_model)
+resamples <- resamples(models)
+
+# Summarize the resampling results
+summary(resamples)
