@@ -104,6 +104,37 @@ ggplot(restaurant_data, aes(x = Promotions, y = Monthly_Revenue)) +
   geom_boxplot() +
   labs(title = "Monthly Revenue by Promotions", x = "Promotions", y = "Monthly Revenue")
 
+# Load necessary libraries
+library(tidyverse)
+
+
+# Univariate Plots
+
+# Histogram for Monthly Revenue
+ggplot(restaurant_data, aes(x = Monthly_Revenue)) +
+  geom_histogram(binwidth = 50, fill = "blue", color = "black") +
+  labs(title = "Histogram of Monthly Revenue", x = "Monthly Revenue", y = "Frequency")
+
+# Density plot for Monthly Revenue
+ggplot(restaurant_data, aes(x = Monthly_Revenue)) +
+  geom_density(fill = "blue", alpha = 0.5) +
+  labs(title = "Density Plot of Monthly Revenue", x = "Monthly Revenue", y = "Density")
+
+# Boxplot for Monthly Revenue
+ggplot(restaurant_data, aes(y = Monthly_Revenue)) +
+  geom_boxplot(fill = "blue") +
+  labs(title = "Boxplot of Monthly Revenue", y = "Monthly Revenue")
+
+# Bar plot for Cuisine Type
+ggplot(restaurant_data, aes(x = Cuisine_Type)) +
+  geom_bar(fill = "blue") +
+  labs(title = "Bar Plot of Cuisine Type", x = "Cuisine Type", y = "Count")
+
+# Bar plot for Promotions
+ggplot(restaurant_data, aes(x = Promotions)) +
+  geom_bar(fill = "blue") +
+  labs(title = "Bar Plot of Promotions", x = "Promotions", y = "Count")
+
 
 
 
