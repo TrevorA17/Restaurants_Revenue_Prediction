@@ -26,3 +26,16 @@ boot_results <- boot(restaurant_data, statistic = bootstrap_mean, R = 1000)
 
 # Summary of bootstrap results
 summary(boot_results)
+
+# Load necessary libraries
+library(caret)  # For cross-validation
+
+# Define the control parameters for cross-validation
+ctrl <- trainControl(method = "cv", number = 5)  # 5-fold cross-validation
+
+# Train a linear regression model using cross-validation
+set.seed(123)  # Set seed for reproducibility
+lm_model <- train(Monthly_Revenue ~ ., data = train_data, method = "lm", trControl = ctrl)
+
+# Summary of the cross-validated linear regression model
+print(lm_model)
