@@ -64,6 +64,45 @@ print(correlation_matrix)
 # Visualize the correlation matrix
 ggcorr(restaurant_data %>% select_if(is.numeric), label = TRUE)
 
+# Load necessary libraries
+library(tidyverse)
+library(car)  # for ANOVA assumptions tests
+library(ggplot2)
+
+# ANOVA to compare Monthly Revenue across different Cuisine Types
+anova_cuisine <- aov(Monthly_Revenue ~ Cuisine_Type, data = restaurant_data)
+summary(anova_cuisine)
+
+# ANOVA to compare Monthly Revenue across different Promotions
+anova_promotions <- aov(Monthly_Revenue ~ Promotions, data = restaurant_data)
+summary(anova_promotions)
+
+# Check assumptions of ANOVA
+
+# 1. Homogeneity of variances
+leveneTest(Monthly_Revenue ~ Cuisine_Type, data = restaurant_data)
+leveneTest(Monthly_Revenue ~ Promotions, data = restaurant_data)
+
+# 2. Normality of residuals
+# Residual plots for Cuisine_Type ANOVA
+par(mfrow = c(2, 2))
+plot(anova_cuisine)
+
+# Residual plots for Promotions ANOVA
+par(mfrow = c(2, 2))
+plot(anova_promotions)
+
+# Visualize the results
+
+# Boxplot for Cuisine_Type
+ggplot(restaurant_data, aes(x = Cuisine_Type, y = Monthly_Revenue)) +
+  geom_boxplot() +
+  labs(title = "Monthly Revenue by Cuisine Type", x = "Cuisine Type", y = "Monthly Revenue")
+
+# Boxplot for Promotions
+ggplot(restaurant_data, aes(x = Promotions, y = Monthly_Revenue)) +
+  geom_boxplot() +
+  labs(title = "Monthly Revenue by Promotions", x = "Promotions", y = "Monthly Revenue")
 
 
 
