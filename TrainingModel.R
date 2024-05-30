@@ -39,3 +39,28 @@ lm_model <- train(Monthly_Revenue ~ ., data = train_data, method = "lm", trContr
 
 # Summary of the cross-validated linear regression model
 print(lm_model)
+
+# Load necessary libraries
+library(caret)       # For model training and evaluation
+library(rpart)       # For decision trees
+library(randomForest)# For random forest
+
+# Define the control parameters for cross-validation
+ctrl <- trainControl(method = "cv", number = 5)  # 5-fold cross-validation
+
+# Train a linear regression model
+set.seed(123)  # Set seed for reproducibility
+lm_model <- train(Monthly_Revenue ~ ., data = train_data, method = "lm", trControl = ctrl)
+
+# Train a decision tree model
+set.seed(123)  # Set seed for reproducibility
+dt_model <- train(Monthly_Revenue ~ ., data = train_data, method = "rpart", trControl = ctrl)
+
+# Train a random forest model
+set.seed(123)  # Set seed for reproducibility
+rf_model <- train(Monthly_Revenue ~ ., data = train_data, method = "rf", trControl = ctrl)
+
+# Summary of the models
+print(lm_model)
+print(dt_model)
+print(rf_model)
