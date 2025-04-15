@@ -10,7 +10,6 @@ restaurant_data <- read.csv("data/Restaurant_revenue.csv", colClasses = c(
   Monthly_Revenue = "numeric"
 ))
 
-
 # Confirm presence of missing values
 
 # Summary of missing values for each column

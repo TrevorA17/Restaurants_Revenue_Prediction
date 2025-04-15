@@ -1,0 +1,391 @@
+---
+title: "Restaurant Revenue Prediction"
+author: "Trevor Okinda"
+date: "2024"
+output:
+  github_document: 
+    toc: yes
+    toc_depth: 4
+    fig_width: 6
+    fig_height: 4
+    df_print: default
+editor_options:
+  chunk_output_type: console
+---
+
+# Student Details
+
+|                                              |     |
+|----------------------------------------------|-----|
+| **Student ID Number**                        | 134780 |
+| **Student Name**                             | Trevor Okinda |
+| **BBIT 4.2 Group**                           | C |
+| **Project Name**                             | Restaurant Revenue Prediction |
+
+# Setup Chunk
+
+**Note:** the following KnitR options have been set as the global defaults: <BR> `knitr::opts_chunk$set(echo = TRUE, warning = FALSE, eval = TRUE, collapse = FALSE, tidy = TRUE)`.
+
+More KnitR options are documented here <https://bookdown.org/yihui/rmarkdown-cookbook/chunk-options.html> and here <https://yihui.org/knitr/options/>.
+
+```{r setup, include=FALSE}
+library(formatR)
+knitr::opts_chunk$set(
+  warning = FALSE,
+  collapse = FALSE
+)
+```
+
+### Source: 
+
+The dataset that was used can be downloaded here: *\<https://www.kaggle.com/datasets/mrsimple07/restaurants-revenue-prediction\>*
+
+### Reference:
+
+*\<MrSimple07. (2024). Restaurants Revenue Prediction [Dataset]. Kaggle. https://www.kaggle.com/datasets/mrsimple07/restaurants-revenue-prediction\>\
+Refer to the APA 7th edition manual for rules on how to cite datasets: <https://apastyle.apa.org/style-grammar-guidelines/references/examples/data-set-references>*
+
+# Exploratory Data Analysis
+## Load dataset
+```{r Load dataset}
+# Load necessary libraries
+library(tidyverse)
+
+# Load dataset
+restaurant_data <- read.csv("Restaurant_revenue.csv", colClasses = c(
+  Number_of_Customers = "integer",
+  Menu_Price = "numeric",
+  Marketing_Spend = "numeric",
+  Cuisine_Type = "factor",
+  Average_Customer_Spending = "numeric",
+  Promotions = "factor",
+  Reviews = "numeric",
+  Monthly_Revenue = "numeric"
+))
+
+# Display the structure of the dataset
+str(restaurant_data)
+```
+
+## Measures of Frequency
+```{r MOF}
+# Load necessary libraries
+library(tidyverse)
+library(psych)  # for descriptive statistics
+library(GGally)  # for correlation plots
+
+# Measures of Frequency
+# Frequency of factor variables
+frequency_promotions <- table(restaurant_data$Promotions)
+frequency_cuisine <- table(restaurant_data$Cuisine_Type)
+print("Frequency of Promotions:")
+print(frequency_promotions)
+print("Frequency of Cuisine Type:")
+print(frequency_cuisine)
+```
+
+## Measures of Central Tendency
+```{r MOCT}
+# Measures of Central Tendency
+# Mean, Median, Mode
+mean_revenue <- mean(restaurant_data$Monthly_Revenue)
+median_revenue <- median(restaurant_data$Monthly_Revenue)
+mode_revenue <- as.numeric(names(sort(table(restaurant_data$Monthly_Revenue), decreasing = TRUE)[1]))
+
+print(paste("Mean Monthly Revenue:", mean_revenue))
+print(paste("Median Monthly Revenue:", median_revenue))
+print(paste("Mode Monthly Revenue:", mode_revenue))
+```
+
+## Measures of Distribution
+```{r MOD}
+# Measures of Distribution
+# Range, Variance, Standard Deviation, Skewness, Kurtosis
+range_revenue <- range(restaurant_data$Monthly_Revenue)
+variance_revenue <- var(restaurant_data$Monthly_Revenue)
+sd_revenue <- sd(restaurant_data$Monthly_Revenue)
+skewness_revenue <- skew(restaurant_data$Monthly_Revenue)
+kurtosis_revenue <- kurtosi(restaurant_data$Monthly_Revenue)
+
+print(paste("Range of Monthly Revenue:", paste(range_revenue, collapse = " - ")))
+print(paste("Variance of Monthly Revenue:", variance_revenue))
+print(paste("Standard Deviation of Monthly Revenue:", sd_revenue))
+print(paste("Skewness of Monthly Revenue:", skewness_revenue))
+print(paste("Kurtosis of Monthly Revenue:", kurtosis_revenue))
+```
+
+## Measures of Relationship
+```{r MOR}
+# Measures of Relationship
+# Correlation matrix
+correlation_matrix <- cor(restaurant_data %>% select_if(is.numeric))
+
+print("Correlation Matrix:")
+print(correlation_matrix)
+
+# Visualize the correlation matrix
+ggcorr(restaurant_data %>% select_if(is.numeric), label = TRUE)
+```
+
+## ANOVA
+```{r ANOVA}
+# Load necessary libraries
+library(tidyverse)
+library(car)  # for ANOVA assumptions tests
+library(ggplot2)
+
+# ANOVA to compare Monthly Revenue across different Cuisine Types
+anova_cuisine <- aov(Monthly_Revenue ~ Cuisine_Type, data = restaurant_data)
+summary(anova_cuisine)
+
+# ANOVA to compare Monthly Revenue across different Promotions
+anova_promotions <- aov(Monthly_Revenue ~ Promotions, data = restaurant_data)
+summary(anova_promotions)
+
+# Check assumptions of ANOVA
+
+# 1. Homogeneity of variances
+leveneTest(Monthly_Revenue ~ Cuisine_Type, data = restaurant_data)
+leveneTest(Monthly_Revenue ~ Promotions, data = restaurant_data)
+
+# 2. Normality of residuals
+# Residual plots for Cuisine_Type ANOVA
+par(mfrow = c(2, 2))
+plot(anova_cuisine)
+
+# Residual plots for Promotions ANOVA
+par(mfrow = c(2, 2))
+plot(anova_promotions)
+```
+
+## Plots
+```{r Plots}
+# Visualize the results
+
+# Boxplot for Cuisine_Type
+ggplot(restaurant_data, aes(x = Cuisine_Type, y = Monthly_Revenue)) +
+  geom_boxplot() +
+  labs(title = "Monthly Revenue by Cuisine Type", x = "Cuisine Type", y = "Monthly Revenue")
+
+# Boxplot for Promotions
+ggplot(restaurant_data, aes(x = Promotions, y = Monthly_Revenue)) +
+  geom_boxplot() +
+  labs(title = "Monthly Revenue by Promotions", x = "Promotions", y = "Monthly Revenue")
+
+# Load necessary libraries
+library(tidyverse)
+
+
+# Univariate Plots
+
+# Histogram for Monthly Revenue
+ggplot(restaurant_data, aes(x = Monthly_Revenue)) +
+  geom_histogram(binwidth = 50, fill = "blue", color = "black") +
+  labs(title = "Histogram of Monthly Revenue", x = "Monthly Revenue", y = "Frequency")
+
+# Density plot for Monthly Revenue
+ggplot(restaurant_data, aes(x = Monthly_Revenue)) +
+  geom_density(fill = "blue", alpha = 0.5) +
+  labs(title = "Density Plot of Monthly Revenue", x = "Monthly Revenue", y = "Density")
+
+# Boxplot for Monthly Revenue
+ggplot(restaurant_data, aes(y = Monthly_Revenue)) +
+  geom_boxplot(fill = "blue") +
+  labs(title = "Boxplot of Monthly Revenue", y = "Monthly Revenue")
+
+# Bar plot for Cuisine Type
+ggplot(restaurant_data, aes(x = Cuisine_Type)) +
+  geom_bar(fill = "blue") +
+  labs(title = "Bar Plot of Cuisine Type", x = "Cuisine Type", y = "Count")
+
+# Bar plot for Promotions
+ggplot(restaurant_data, aes(x = Promotions)) +
+  geom_bar(fill = "blue") +
+  labs(title = "Bar Plot of Promotions", x = "Promotions", y = "Count")
+
+# Multivariate Plots
+
+# Scatter plot for Average Customer Spending vs Monthly Revenue
+ggplot(restaurant_data, aes(x = Average_Customer_Spending, y = Monthly_Revenue)) +
+  geom_point(color = "blue") +
+  labs(title = "Scatter Plot of Average Customer Spending vs Monthly Revenue",
+       x = "Average Customer Spending", y = "Monthly Revenue")
+
+# Scatter plot for Marketing Spend vs Monthly Revenue, colored by Cuisine Type
+ggplot(restaurant_data, aes(x = Marketing_Spend, y = Monthly_Revenue, color = Cuisine_Type)) +
+  geom_point() +
+  labs(title = "Scatter Plot of Marketing Spend vs Monthly Revenue by Cuisine Type",
+       x = "Marketing Spend", y = "Monthly Revenue")
+
+# Boxplot of Monthly Revenue by Cuisine Type
+ggplot(restaurant_data, aes(x = Cuisine_Type, y = Monthly_Revenue)) +
+  geom_boxplot(fill = "blue") +
+  labs(title = "Boxplot of Monthly Revenue by Cuisine Type", x = "Cuisine Type", y = "Monthly Revenue")
+
+# Boxplot of Monthly Revenue by Promotions
+ggplot(restaurant_data, aes(x = Promotions, y = Monthly_Revenue)) +
+  geom_boxplot(fill = "blue") +
+  labs(title = "Boxplot of Monthly Revenue by Promotions", x = "Promotions", y = "Monthly Revenue")
+
+# Pair plot for numeric variables
+ggpairs(restaurant_data %>% select_if(is.numeric), title = "Pair Plot of Numeric Variables")
+
+```
+
+# Preprocessing and Data Transformation
+## Missing Values
+```{r Missing Values}
+# Confirm presence of missing values
+
+# Summary of missing values for each column
+missing_values_summary <- colSums(is.na(restaurant_data))
+print("Summary of missing values for each column:")
+print(missing_values_summary)
+
+# Total number of missing values in the dataset
+total_missing_values <- sum(is.na(restaurant_data))
+print(paste("Total number of missing values in the dataset:", total_missing_values))
+```
+
+## Round-Off Money Columns
+```{r Round-Off Data}
+# Round off specified columns to 2 decimal places
+restaurant_data <- restaurant_data %>%
+  mutate(
+    Monthly_Revenue = round(Monthly_Revenue, 2),
+    Average_Customer_Spending = round(Average_Customer_Spending, 2),
+    Marketing_Spend = round(Marketing_Spend, 2),
+    Menu_Price = round(Menu_Price, 2)
+  )
+
+
+# Display the first few rows of the dataset to verify the rounding
+head(restaurant_data)
+
+# Display the structure of the dataset to verify the data type
+str(restaurant_data)
+
+# View the dataset in a separate viewer window
+View(restaurant_data)
+```
+
+# Model Training
+## Data Splitting
+```{r Data Splitting}
+# Load necessary libraries
+library(caTools)  # For data splitting
+
+# Split the data into training and testing sets
+set.seed(123)  # Set seed for reproducibility
+split <- sample.split(restaurant_data$Monthly_Revenue, SplitRatio = 0.7)
+train_data <- subset(restaurant_data, split == TRUE)
+test_data <- subset(restaurant_data, split == FALSE)
+
+# Summary of the split
+cat("Training set size:", nrow(train_data), "\n")
+cat("Testing set size:", nrow(test_data), "\n")
+```
+
+## Bootstrapping
+```{r Bootstrapping}
+# Load necessary libraries
+library(boot)  # For bootstrapping
+
+# Define the function to compute the statistic of interest (e.g., mean)
+bootstrap_mean <- function(data, indices) {
+  sample_data <- data[indices, ]
+  return(mean(sample_data$Monthly_Revenue))
+}
+
+# Perform bootstrap resampling
+set.seed(123)  # Set seed for reproducibility
+boot_results <- boot(restaurant_data, statistic = bootstrap_mean, R = 1000)
+
+# Summary of bootstrap results
+summary(boot_results)
+```
+
+## Cross-validation
+```{r Cross-validation}
+# Load necessary libraries
+library(caret)  # For cross-validation
+
+# Define the control parameters for cross-validation
+ctrl <- trainControl(method = "cv", number = 5)  # 5-fold cross-validation
+
+# Train a linear regression model using cross-validation
+set.seed(123)  # Set seed for reproducibility
+lm_model <- train(Monthly_Revenue ~ ., data = train_data, method = "lm", trControl = ctrl)
+
+# Summary of the cross-validated linear regression model
+print(lm_model)
+```
+
+## Model Training
+```{r Model Training}
+# Load necessary libraries
+library(caret)       # For model training and evaluation
+library(rpart)       # For decision trees
+library(randomForest)# For random forest
+
+# Define the control parameters for cross-validation
+ctrl <- trainControl(method = "cv", number = 5)  # 5-fold cross-validation
+
+# Train a linear regression model
+set.seed(123)  # Set seed for reproducibility
+lm_model <- train(Monthly_Revenue ~ ., data = train_data, method = "lm", trControl = ctrl)
+
+# Train a decision tree model
+set.seed(123)  # Set seed for reproducibility
+dt_model <- train(Monthly_Revenue ~ ., data = train_data, method = "rpart", trControl = ctrl)
+
+# Train a random forest model
+set.seed(123)  # Set seed for reproducibility
+rf_model <- train(Monthly_Revenue ~ ., data = train_data, method = "rf", trControl = ctrl)
+```
+
+## Performance Comparison
+```{r Performance Comparison}
+# Summary of the models
+print(lm_model)
+print(dt_model)
+print(rf_model)
+
+# Compare model performance using resamples
+models <- list("Linear Regression" = lm_model,
+               "Decision Tree" = dt_model,
+               "Random Forest" = rf_model)
+resamples <- resamples(models)
+
+# Summarize the resampling results
+summary(resamples)
+```
+
+# Saving Model
+```{r Saving Model}
+# Saving the Linear Regression (lm) model
+saveRDS(lm_model, "./models/saved_lm_model.rds")
+
+# Load the saved model
+loaded_lm_model <- readRDS("./models/saved_lm_model.rds")
+
+# Prepare new data for prediction
+new_data <- data.frame(
+  Number_of_Customers = 61,
+  Menu_Price = 43.11763549,
+  Marketing_Spend = 12.66379252,
+  Cuisine_Type = "Japanese",
+  Average_Customer_Spending = 36.23613252,
+  Promotions = "0",
+  Reviews = 45
+)
+
+# Use the loaded model to make predictions
+predictions_loaded_model <- predict(loaded_lm_model, newdata = new_data)
+
+# Print predictions
+print(predictions_loaded_model)
+
+```
+
+
